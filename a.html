@@ -1,0 +1,461 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PharmCare | Medicine Inventory</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #263445;
+    }
+
+    header {
+      background: #087f70;
+      color: white;
+      padding: 20px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 26px;
+    }
+
+    header p {
+      margin-top: 5px;
+      font-size: 13px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .heading {
+      margin-bottom: 20px;
+    }
+
+    .heading h2 {
+      margin-bottom: 8px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px #0000000c;
+      border-left: 4px solid #087f70;
+    }
+
+    .card p {
+      color: #687789;
+      margin-bottom: 12px;
+    }
+
+    .card h3 {
+      font-size: 28px;
+    }
+
+    .panel {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: 0 3px 12px #0000000c;
+    }
+
+    .panel h2 {
+      margin-bottom: 18px;
+      font-size: 21px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    input, button {
+      padding: 12px;
+      border-radius: 7px;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid #d5dce5;
+      outline-color: #087f70;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      background: #087f70;
+      color: white;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #06695d;
+    }
+
+    .search {
+      max-width: 350px;
+      margin-bottom: 18px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 14px 12px;
+      border-bottom: 1px solid #e8edf2;
+    }
+
+    th {
+      background: #eef7f5;
+      color: #087f70;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 6px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .good {
+      background: #d9f7e8;
+      color: #087443;
+    }
+
+    .low {
+      background: #fff0ce;
+      color: #996000;
+    }
+
+    .expired {
+      background: #ffe0e0;
+      color: #b42323;
+    }
+
+    .delete-btn {
+      background: #d83b42;
+      padding: 8px 10px;
+    }
+
+    .delete-btn:hover {
+      background: #ae252b;
+    }
+
+    .alerts {
+      line-height: 2;
+      padding-left: 20px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 22px;
+      background: #e8f1ef;
+      color: #52645f;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 22px;
+      }
+
+      .container {
+        margin-top: 20px;
+        padding: 0 12px;
+      }
+
+      .panel {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div>
+      <h1>💊 PharmCare</h1>
+      <p>Pharmaceutical Inventory Management System</p>
+    </div>
+    <div>Admin Dashboard</div>
+  </header>
+
+  <main class="container">
+
+    <section class="heading">
+      <h2>Dashboard</h2>
+      <p>Manage your medicines, stock and expiry dates.</p>
+    </section>
+
+    <section class="cards">
+      <div class="card">
+        <p>Total Medicines</p>
+        <h3 id="totalMedicines">0</h3>
+      </div>
+
+      <div class="card">
+        <p>Total Stock Units</p>
+        <h3 id="totalStock">0</h3>
+      </div>
+
+      <div class="card">
+        <p>Low Stock Items</p>
+        <h3 id="lowStock">0</h3>
+      </div>
+
+      <div class="card">
+        <p>Expired Medicines</p>
+        <h3 id="expiredStock">0</h3>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Add New Medicine</h2>
+
+      <form id="medicineForm">
+        <div class="form-grid">
+          <input id="name" placeholder="Medicine name" required>
+          <input id="batch" placeholder="Batch number" required>
+          <input id="quantity" type="number"
+                 min="0" placeholder="Quantity" required>
+          <input id="price" type="number" min="0"
+                 step="0.01" placeholder="Price (₹)" required>
+          <input id="expiry" type="date" required>
+          <button type="submit">+ Add Medicine</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Medicine Inventory</h2>
+
+      <input class="search" id="search"
+             placeholder="Search medicine or batch...">
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Medicine</th>
+              <th>Batch No.</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Expiry Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="medicineTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Stock & Expiry Alerts</h2>
+      <ul class="alerts" id="alerts"></ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 PharmCare | B.Tech Project</p>
+  </footer>
+
+  <script>
+    let medicines = [
+      {
+        name: "Paracetamol",
+        batch: "PCM101",
+        quantity: 100,
+        price: 25,
+        expiry: "2027-12-31"
+      },
+      {
+        name: "Vitamin C",
+        batch: "VTC202",
+        quantity: 8,
+        price: 60,
+        expiry: "2027-03-15"
+      },
+      {
+        name: "Cough Syrup",
+        batch: "CS303",
+        quantity: 15,
+        price: 95,
+        expiry: "2026-11-10"
+      }
+    ];
+
+    const form = document.getElementById("medicineForm");
+    const search = document.getElementById("search");
+
+    function getStatus(medicine) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const expiryDate = new Date(medicine.expiry + "T00:00:00");
+
+      if (expiryDate < today) return "Expired";
+      if (medicine.quantity <= 10) return "Low Stock";
+      return "In Stock";
+    }
+
+    function renderMedicines() {
+      const query = search.value.toLowerCase();
+
+      const filtered = medicines.filter(m =>
+        m.name.toLowerCase().includes(query) ||
+        m.batch.toLowerCase().includes(query)
+      );
+
+      document.getElementById("medicineTable").innerHTML =
+        filtered.map(m => {
+          const index = medicines.indexOf(m);
+          const status = getStatus(m);
+
+          const statusClass =
+            status === "Expired" ? "expired" :
+            status === "Low Stock" ? "low" : "good";
+
+          return `
+            <tr>
+              <td>${escapeHTML(m.name)}</td>
+              <td>${escapeHTML(m.batch)}</td>
+              <td>${m.quantity}</td>
+              <td>₹${m.price.toFixed(2)}</td>
+              <td>${m.expiry}</td>
+              <td>
+                <span class="status ${statusClass}">
+                  ${status}
+                </span>
+              </td>
+              <td>
+                <button class="delete-btn"
+                  onclick="deleteMedicine(${index})">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join("");
+
+      document.getElementById("totalMedicines").textContent =
+        medicines.length;
+
+      document.getElementById("totalStock").textContent =
+        medicines.reduce((sum, m) => sum + m.quantity, 0);
+
+      document.getElementById("lowStock").textContent =
+        medicines.filter(m =>
+          m.quantity <= 10 && getStatus(m) !== "Expired"
+        ).length;
+
+      document.getElementById("expiredStock").textContent =
+        medicines.filter(m => getStatus(m) === "Expired").length;
+
+      const alerts = medicines.filter(m =>
+        getStatus(m) !== "In Stock"
+      );
+
+      document.getElementById("alerts").innerHTML =
+        alerts.length
+          ? alerts.map(m => `
+              <li>
+                <strong>${escapeHTML(m.name)}</strong>:
+                ${getStatus(m)} — Quantity: ${m.quantity}
+              </li>
+            `).join("")
+          : "<li>No stock or expiry alerts.</li>";
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const medicine = {
+        name: document.getElementById("name").value.trim(),
+        batch: document.getElementById("batch").value.trim(),
+        quantity: Number(document.getElementById("quantity").value),
+        price: Number(document.getElementById("price").value),
+        expiry: document.getElementById("expiry").value
+      };
+
+      if (!medicine.name || !medicine.batch ||
+          !medicine.expiry || medicine.quantity < 0 ||
+          medicine.price < 0) {
+        alert("Please enter valid medicine details.");
+        return;
+      }
+
+      if (medicines.some(m => m.batch.toLowerCase() ===
+          medicine.batch.toLowerCase())) {
+        alert("Batch number already exists.");
+        return;
+      }
+
+      medicines.push(medicine);
+      form.reset();
+      renderMedicines();
+      alert("Medicine added successfully!");
+    });
+
+    function deleteMedicine(index) {
+      if (confirm("Delete this medicine from inventory?")) {
+        medicines.splice(index, 1);
+        renderMedicines();
+      }
+    }
+
+    search.addEventListener("input", renderMedicines);
+
+    renderMedicines();
+  </script>
+
+</body>
+</html>
